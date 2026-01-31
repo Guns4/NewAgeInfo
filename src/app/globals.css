@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 2, 6, 23;
+    /* Slate 950 */
+    --background-end-rgb: 2, 6, 23;
+    /* Slate 950 */
+}
+
+body {
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--background-start-rgb));
+    /* Mobile Safety: Ensure content isn't covered by Home bar */
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    /* Typography Audit */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+@layer utilities {
+
+    /* Mobile-First Touch Target Optimization */
+    .touch-target {
+        min-height: 48px;
+        min-width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Typography Utilities */
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .text-pretty {
+        text-wrap: pretty;
+    }
+
+    /* Prevent clipping on long strings without spaces */
+    .break-anywhere {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        /* Fallback */
+        hyphens: auto;
+    }
+
+    /* Glassmorphism Utilities - Refined for Contrast */
+    .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .glass-card {
+        background: rgba(2, 6, 23, 0.65);
+        /* Darker base for better text contrast */
+        backdrop-filter: blur(16px);
+        /* Standard Unicorn Blur */
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        /* Increased border contrast */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-button {
+        background: rgba(99, 102, 241, 0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-button:hover {
+        background: rgba(99, 102, 241, 0.25);
+        border-color: rgba(139, 92, 246, 0.7);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+        transform: translateY(-1px);
+    }
+
+    /* Phase 58: Accessibility Focus Utility */
+    .focus-ring {
+        @apply outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-shadow duration-200;
+    }
+}
