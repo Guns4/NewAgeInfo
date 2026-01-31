@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { RefreshCcw, AlertTriangle } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+
+const WITTY_MESSAGES = [
+    "Waktu sedang berhenti sejenak, kami akan segera memperbaikinya.",
+    "The flux capacitor is oscillating in the wrong direction.",
+    "A glitch in the Matrix has been detected. Agents are on their way.",
+    "Your age is so powerful it broke our cosmic calculator.",
+    "Universe simulation encountered a 404: Reality not found.",
+    "Time-space continuum is having a coffee break. Please wait.",
+];
 
 export default function Error({
     error,
@@ -12,8 +21,12 @@ export default function Error({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
+    const [wittyMessage, setWittyMessage] = useState(WITTY_MESSAGES[0]);
+
     useEffect(() => {
         console.error(error);
+        const randomMsg = WITTY_MESSAGES[Math.floor(Math.random() * WITTY_MESSAGES.length)];
+        setWittyMessage(randomMsg);
     }, [error]);
 
     return (
@@ -37,7 +50,7 @@ export default function Error({
                             Time Has Stopped
                         </h2>
                         <p className="text-slate-400">
-                            "Waktu sedang berhenti sejenak, kami akan segera memperbaikinya."
+                            "{wittyMessage}"
                         </p>
                         <p className="text-xs text-slate-600 font-mono pt-4">
                             Error Code: {error.digest || "UNKNOWN_ANOMALY"}

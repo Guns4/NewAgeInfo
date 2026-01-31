@@ -26,8 +26,10 @@ export interface PosterData {
     }[];
 }
 
+import { differenceInCalendarDays } from "date-fns";
+
 /**
- * Javanese Weton Logic (Simplified for UI)
+ * Javanese Weton Logic (Phase 66: High Precision)
  * Pancawara: Legi, Pahing, Pon, Wage, Kliwon
  * Saptawara: Minggu, Senin, Selasa, Rabu, Kamis, Jumat, Sabtu
  */
@@ -35,19 +37,20 @@ export function getWeton(date: Date) {
     const saptawara = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     const pancawara = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
 
-    // Reference date for weton calculation (e.g., Friday, 1 Jan 1900 was Juma'at Wage)
-    // 1 Jan 1900 is safe ground for these offsets.
-    const refDate = new Date(1900, 0, 1);
-    const diffDays = Math.floor((date.getTime() - refDate.getTime()) / (1000 * 60 * 60 * 24));
+    // Reference date: 1 Jan 2000 was Saturday Pahing.
+    const refDate = new Date(2000, 0, 1);
+    const diffDays = differenceInCalendarDays(date, refDate);
 
     const sIdx = date.getDay(); // 0 is Sunday
-    // Offset for 1 Jan 1900 (Monday Wage? Actually let's just use day index for Saptawara)
-    const pIdx = (diffDays + 3) % 5; // 3 is offset adjustment for 1900-01-01 being Wage
+
+    // Offset for Pahing (index 1) at Jan 1 2000
+    let pIdx = (1 + diffDays) % 5;
+    if (pIdx < 0) pIdx += 5;
 
     return {
         day: saptawara[sIdx],
-        marketDay: pancawara[pIdx < 0 ? pIdx + 5 : pIdx],
-        combined: `${saptawara[sIdx]} ${pancawara[pIdx < 0 ? pIdx + 5 : pIdx]}`
+        marketDay: pancawara[pIdx],
+        combined: `${saptawara[sIdx]} ${pancawara[pIdx]}`
     };
 }
 

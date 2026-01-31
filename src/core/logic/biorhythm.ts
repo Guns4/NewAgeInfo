@@ -6,7 +6,7 @@
  * - Intellectual (33 days): Focus, Logic
  */
 
-import { differenceInDays } from "date-fns";
+import { differenceInCalendarDays } from "date-fns";
 
 export interface BiorhythmData {
     physical: number; // -100 to 100
@@ -24,9 +24,9 @@ export interface BiorhythmCycle {
 }
 
 export function calculateBiorhythm(birthDate: Date, targetDate: Date = new Date()): BiorhythmData {
-    // We use a high-precision day difference
-    const diffTime = targetDate.getTime() - birthDate.getTime();
-    const daysLived = diffTime / (1000 * 60 * 60 * 24);
+    // Phase 66: High-precision day difference using calendar days 
+    // to ensure Leap Year days are treated as full units.
+    const daysLived = differenceInCalendarDays(targetDate, birthDate);
 
     return {
         physical: Math.round(Math.sin((2 * Math.PI * daysLived) / 23) * 100),

@@ -45,6 +45,25 @@ export class AgeService {
             throw new Error("Invalid birth date provided");
         }
 
+        // Edge Case: Future Date
+        if (birthDate > now) {
+            // Return a "Zero" age or handle as time traveler in UI
+            return {
+                years: 0,
+                months: 0,
+                weeks: 0,
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                totalDays: 0,
+                totalWeeks: 0,
+                nextBirthday: birthDate,
+                daysUntilBirthday: 0,
+                lifePercentage: 0,
+            };
+        }
+
         // 1. Time Calculation
         const years = differenceInYears(now, birthDate);
 
@@ -64,26 +83,35 @@ export class AgeService {
         const minutes = differenceInMinutes(now, lastDay) % 60;
         const seconds = differenceInSeconds(now, lastDay) % 60;
 
-        // 2. Birthday Logic (Handling Leap Years)
-        const nextBirthday = addYears(birthDate, years + 1);
+        // 2. Birthday Logic (Handling Leap Years & Extreme Dates)
+        let nextBirthday = addYears(birthDate, years + 1);
+
+        // Handle Leap Baby edge case for next birthday
+        if (isLeapYear(birthDate) && birthDate.getMonth() === 1 && birthDate.getDate() === 29) {
+            if (!isLeapYear(nextBirthday)) {
+                // If next anniversary isn't a leap year, birthday is Feb 28
+                nextBirthday = new Date(nextBirthday.getFullYear(), 1, 28, birthDate.getHours(), birthDate.getMinutes());
+            }
+        }
 
         // Improve precision for days until birthday
-        // Normalize to start of day to avoid timezone/hour discrepancies affecting day count
         const startOfNow = startOfDay(now);
         const startOfNextBirthday = startOfDay(nextBirthday);
 
         let daysUntil = differenceInDays(startOfNextBirthday, startOfNow);
         if (daysUntil < 0) {
-            // If calculation went negative (rare edge case with timezones), re-align
-            daysUntil = 365 + (isLeapYear(now) ? 1 : 0);
+            // Already had birthday this year or timezone shift
+            const nextYearBirthday = addYears(nextBirthday, 1);
+            daysUntil = differenceInDays(startOfNextBirthday, startOfNow);
+            // Re-check for leap year if it's negative
+            if (daysUntil < 0) daysUntil = 365 + (isLeapYear(now) ? 1 : 0);
         }
 
         // 3. Life Percentage
-        // Calculate total lifespan days for expected age
-        // Approximation: expectedAge * 365.25
+        // For ancient dates (1800s), lifePercentage might exceed 100%
         const totalLifeDays = expectedAge * 365.25;
         const totalDaysLived = differenceInDays(now, birthDate);
-        const lifePercentage = Math.min(100, Math.max(0, (totalDaysLived / totalLifeDays) * 100));
+        const lifePercentage = Math.min(1000, Math.max(0, (totalDaysLived / totalLifeDays) * 100));
 
         return {
             years,
